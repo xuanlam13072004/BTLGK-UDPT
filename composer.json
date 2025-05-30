@@ -1,5 +1,6 @@
 {
     "require": {
-        "rakibtg/sleekdb": "^2.15"
+        "rakibtg/sleekdb": "^2.15",
+        "php-amqplib/php-amqplib": "3.2"
     }
 }
