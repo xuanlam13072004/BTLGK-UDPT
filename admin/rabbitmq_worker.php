@@ -1,11 +1,12 @@
 <?php
+set_time_limit(0); // Chạy vô thời hạn
 require_once __DIR__ . '/vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use SleekDB\SleekDB;
 
 // Store vào database riêng của admin
-$store = SleekDB::store('news', __DIR__ . '/database');
+$store = SleekDB::store('news', __DIR__ . '/database', ['timeout' => false]);
 
 // ✅ Sửa: Lưu avatar vào thư mục admin/database/avatars
 $avatarDir = __DIR__ . '/database/avatars';
@@ -46,7 +47,7 @@ $channel->basic_consume('posts_queue', '', false, true, false, false, $callback)
 
 while ($channel->is_open()) {
     try {
-        $channel->wait(null, false, 5);
+        $channel->wait();
     } catch (Exception $e) {
         echo "❌ Lỗi khi chờ dữ liệu: " . $e->getMessage() . "\n";
     }

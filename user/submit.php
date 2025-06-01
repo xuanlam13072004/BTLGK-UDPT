@@ -1,4 +1,7 @@
 <?php
+session_start();
+$lang = $_SESSION['lang'] ?? 'vi';
+
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 ini_set('display_errors', 1);
 
@@ -10,6 +13,45 @@ function safe($str) {
     return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8');
 }
 
+// 🎯 Từ ngữ theo ngôn ngữ
+$labels = [
+    'vi' => [
+        'pageTitle' => '📤 Gửi bài viết mới',
+        'title' => 'Tiêu đề:',
+        'about' => 'Mô tả:',
+        'author' => 'Tên tác giả:',
+        'avatar' => 'Ảnh đại diện:',
+        'submit' => 'Gửi bài',
+        'back' => '⬅ Về trang chủ',
+        'success' => '✅ Bài viết đã gửi thành công, chờ duyệt!',
+        'err_required' => [
+            'title' => 'Tiêu đề không được để trống.',
+            'about' => 'Mô tả không được để trống.',
+            'author' => 'Tên tác giả không được để trống.',
+        ],
+        'err_upload' => 'Lỗi khi upload file ảnh avatar!',
+        'err_type' => 'Chỉ upload file ảnh JPG, PNG, GIF!',
+    ],
+    'en' => [
+        'pageTitle' => '📤 Submit New Post',
+        'title' => 'Title:',
+        'about' => 'Description:',
+        'author' => 'Author Name:',
+        'avatar' => 'Avatar:',
+        'submit' => 'Submit',
+        'back' => '⬅ Back to homepage',
+        'success' => '✅ Post submitted successfully. Waiting for approval!',
+        'err_required' => [
+            'title' => 'Title cannot be empty.',
+            'about' => 'Description cannot be empty.',
+            'author' => 'Author name cannot be empty.',
+        ],
+        'err_upload' => 'Error uploading avatar!',
+        'err_type' => 'Only JPG, PNG, GIF images allowed!',
+    ]
+];
+$t = $labels[$lang];
+
 // Xử lý khi gửi bài
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
@@ -17,9 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $author_name = trim($_POST['author_name'] ?? '');
 
     $errors = [];
-    if ($title === '') $errors[] = "Tiêu đề không được để trống.";
-    if ($about === '') $errors[] = "Mô tả không được để trống.";
-    if ($author_name === '') $errors[] = "Tên tác giả không được để trống.";
+    if ($title === '') $errors[] = $t['err_required']['title'];
+    if ($about === '') $errors[] = $t['err_required']['about'];
+    if ($author_name === '') $errors[] = $t['err_required']['author'];
 
     $author_avatar = null;
 
@@ -30,20 +72,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
             $newFileName = uniqid('avatar_') . '.' . $ext;
 
-            // ✅ Lưu ảnh vào thư mục admin/database/avatars/
             $uploadPath = __DIR__ . '/../admin/database/avatars/' . $newFileName;
             if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
                 $author_avatar = $newFileName;
             } else {
-                $errors[] = "Lỗi khi upload file ảnh avatar!";
+                $errors[] = $t['err_upload'];
             }
         } else {
-            $errors[] = "Chỉ upload file ảnh JPG, PNG, GIF!";
+            $errors[] = $t['err_type'];
         }
     }
 
     if (empty($errors)) {
+// Thêm vào trong if (empty($errors)) { ... }
         $data = [
+            'custom_id' => 'post_' . bin2hex(random_bytes(8)), // ✅ ID riêng
             'title' => $title,
             'about' => $about,
             'author' => [
@@ -53,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'created_at' => date('Y-m-d H:i:s'),
             'status' => 'pending'
         ];
+
 
         try {
             $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
@@ -65,9 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $channel->close();
             $connection->close();
 
-            echo "<p style='color:green;'>✅ Bài viết đã gửi thành công, chờ duyệt!</p>";
+            echo "<p style='color:green;'>{$t['success']}</p>";
         } catch (Exception $e) {
-            echo "<p style='color:red;'>❌ Lỗi gửi RabbitMQ: " . safe($e->getMessage()) . "</p>";
+            echo "<p style='color:red;'>❌ RabbitMQ Error: " . safe($e->getMessage()) . "</p>";
         }
     } else {
         foreach ($errors as $err) {
@@ -78,38 +122,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="<?= $lang ?>">
 <head>
   <meta charset="UTF-8">
-  <title>Gửi bài viết</title>
-  <style>
-    body { font-family: Arial; max-width: 600px; margin: 20px auto; }
-    input[type="text"], textarea { width: 100%; padding: 6px; margin-bottom: 10px; }
-    input[type="file"] { margin-bottom: 10px; }
-    button { padding: 8px 15px; }
-  </style>
+  <title><?= $t['pageTitle'] ?></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- ✅ Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-<h2>📤 Gửi bài viết mới</h2>
+<div class="container my-5" style="max-width: 600px;">
 
-<form method="POST" enctype="multipart/form-data">
-  <label>Tiêu đề:</label>
-  <input type="text" name="title" required>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="card-title mb-4">📝 <?= $t['pageTitle'] ?></h3>
 
-  <label>Mô tả:</label>
-  <textarea name="about" rows="5" required></textarea>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label class="form-label"><?= $t['title'] ?></label>
+          <input type="text" name="title" class="form-control" required>
+        </div>
 
-  <label>Tên tác giả:</label>
-  <input type="text" name="author_name" required>
+        <div class="mb-3">
+          <label class="form-label"><?= $t['about'] ?></label>
+          <textarea name="about" class="form-control" rows="5" required></textarea>
+        </div>
 
-  <label>Ảnh đại diện:</label>
-  <input type="file" name="author_avatar_file" accept="image/*">
+        <div class="mb-3">
+          <label class="form-label"><?= $t['author'] ?></label>
+          <input type="text" name="author_name" class="form-control" required>
+        </div>
 
-  <button type="submit">Gửi bài</button>
-</form>
+        <div class="mb-3">
+          <label class="form-label"><?= $t['avatar'] ?></label>
+          <input type="file" name="author_avatar_file" class="form-control" accept="image/*">
+        </div>
 
-<p><a href="home.php">⬅ Về trang chủ</a></p>
+        <button type="submit" class="btn btn-primary">📤 <?= $t['submit'] ?></button>
+      </form>
 
+      <p class="mt-3">
+        <a href="home.php" class="btn btn-link">← <?= $t['back'] ?></a>
+      </p>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>

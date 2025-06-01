@@ -1,6 +1,7 @@
 {
     "require": {
         "rakibtg/sleekdb": "^2.15",
-        "php-amqplib/php-amqplib": "3.2"
+        "php-amqplib/php-amqplib": "3.2",
+        "google/cloud-translate": "1.12"
     }
 }
