@@ -27,15 +27,15 @@ $callback = function ($msg) use ($adminStore, $userStore, $userAvatarDir) {
         return;
     }
 
-    // Lấy _id từ bài gốc để xóa sau
+    // Lấy _id gốc để xóa sau khi insert
     $adminId = $item['_id'];
 
-    // Giữ nguyên custom_id nếu đã có, nếu không thì tạo mới
+    // Giữ nguyên custom_id nếu có, nếu không có thì tự tạo
     if (!isset($item['custom_id']) || !$item['custom_id']) {
         $item['custom_id'] = uniqid('post_');
     }
 
-    // Chuyển avatar nếu cần
+    // Chuyển avatar (nếu có) từ admin sang user
     $avatar = $item['author']['avatar'] ?? '';
     $adminAvatarPath = __DIR__ . '/database/avatars/' . $avatar;
     $userAvatarPath  = $userAvatarDir . '/' . $avatar;
@@ -43,17 +43,29 @@ $callback = function ($msg) use ($adminStore, $userStore, $userAvatarDir) {
         copy($adminAvatarPath, $userAvatarPath);
     }
 
-    // Cập nhật trạng thái, xoá _id trước khi insert
+    // Đảm bảo trường 'category' vẫn tồn tại. 
+    // Nếu admin DB chưa có, bạn có thể gán mặc định hoặc bỏ qua.
+    $category = $item['category'] ?? '';
+
+    // Cập nhật trạng thái và xóa _id để insert vào user DB
     $item['status'] = 'approved';
     unset($item['_id']);
 
-    // Chèn sang user DB
-    $userStore->insert($item);
+    // Chèn sang user DB (SleekDB tự động sinh _id mới)
+    $userStore->insert([
+        'custom_id'  => $item['custom_id'],
+        'title'      => $item['title'],
+        'about'      => $item['about'],
+        'category'   => $category,
+        'author'     => $item['author'],
+        'created_at' => $item['created_at'],
+        'status'     => $item['status']
+    ]);
 
     // Xoá bài khỏi admin DB
     $adminStore->deleteById($adminId);
 
-    // Xoá avatar nếu không còn dùng
+    // Xoá avatar khỏi admin nếu không còn dùng
     if ($avatar) {
         $stillUsed = $adminStore->findBy(["author.avatar", "=", $avatar]);
         if (empty($stillUsed) && file_exists($adminAvatarPath)) {
