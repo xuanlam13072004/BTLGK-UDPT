@@ -118,6 +118,7 @@ if (isset($_GET['approve'])) {
     $item = $adminStore->findOneBy(["custom_id", "=", $_GET['approve']]);
     if ($item) {
         try {
+            // 1. Gửi bài sang queue approve_queue để worker duyệt và đồng bộ sang user
             $conn = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
             $channel = $conn->channel();
             $channel->queue_declare('approve_queue', false, true, false, false);
@@ -125,6 +126,10 @@ if (isset($_GET['approve'])) {
             $channel->basic_publish($msg, '', 'approve_queue');
             $channel->close();
             $conn->close();
+
+            // 2. Gửi yêu cầu dịch lại cho cả tiếng Việt và tiếng Anh (update file dịch)
+            triggerReTranslate();
+
         } catch (Exception $e) {
             echo "<p style='color:red;'>❌ Lỗi gửi vào approve_queue: " . safe($e->getMessage()) . "</p>";
         }
@@ -132,6 +137,7 @@ if (isset($_GET['approve'])) {
     header("Location: admin.php?cat=" . urlencode($selectedCategory) . "&q=" . urlencode($keyword));
     exit;
 }
+
 
 /**
  * Nếu user click “Sửa” trên bài viết đã duyệt, sẽ mở form điền thông tin

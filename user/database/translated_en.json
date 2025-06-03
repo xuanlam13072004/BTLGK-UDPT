@@ -4,21 +4,43 @@
         "about": "Everyone has their own way of living, we don&#39;t need to admire the lives of others. Some people smile brightly on the outside but hide many tears, and some people look miserable but in fact they are living a very comfortable life. Happiness does not have a standard answer, joy does not come from only one path. Take back the admiring gaze of others and look back at your soul. Living the life you want is the most beautiful days, the way you want to live is the best way to live.",
         "author": {
             "name": "Nguyễn Xuân Lam",
-            "avatar": "avatar_683db949c1654.jpg"
+            "avatar": "avatar_683ebc7fc732c.jpg"
         },
-        "created_at": "2025-06-02 16:46:33",
+        "created_at": "2025-06-03 11:12:31",
+        "category": "truyen_cam_hung",
+        "category_label": "Inspiration"
+    },
+    {
+        "title": "Blessings and misfortunes in life",
+        "about": "A good person, even if fortune has not yet come, will naturally leave disaster behind; an evil person, even if misfortune has not yet come, will naturally leave fortune behind; doing good deeds is like grass growing in a spring garden, even if you do not see the growth, it still grows steadily; doing evil deeds is like sharpening a knife on a stone, even if you do not see the damage, it still wears away day by day. Fortune and misfortune are all in the mind, the scary thing about doing evil is not worrying about others discovering it, but knowing it yourself; the happy thing about doing good deeds is not being praised by others, but feeling at peace with yourself.",
+        "author": {
+            "name": "Xuân Lam",
+            "avatar": "avatar_683ebca46e330.jpeg"
+        },
+        "created_at": "2025-06-03 11:13:08",
         "category": "cuoc_song",
         "category_label": "Life"
     },
     {
-        "title": "This life is your choice.",
-        "about": "Spiritual joy has countless ways to be happy, friends do not come together for money. Knowledge in the world is not expensive to learn. To be happy, you do not need too much money to be happy. To survive, to be healthy and happy, in essence, you do not need too much wealth. On the contrary, creating too much material will give rise to anxiety, illness and disaster. The purpose of this life is not to come here to compete with anyone, to show off for the admiration of strangers, we come here to be happy, to live a useful and enlightened life.",
+        "title": "Trouble is also because of being too stubborn.",
+        "about": "The more we worry about something, the more troubled we become. It&#39;s best to let go of what&#39;s past, digging into it again won&#39;t be fun, it will only make others and ourselves suffer. When you&#39;re an adult, don&#39;t hesitate in whatever you do, put aside things that aren&#39;t worth it, and treat things that make you happy with a normal heart. In this life, no matter what happens, people who are miserable will bring pain upon themselves, worrying less will make their hearts at peace. After going through so many things, we see that there are few people who love us, but there are many who don&#39;t like us. So let it be, if someone is good to you, be good to them, if someone doesn&#39;t like you, avoid them to avoid headaches. Don&#39;t be too busy living for others because you&#39;re afraid of hurting them, when you look back, the one who is hurt the most is you.",
         "author": {
-            "name": "Xuân Lam",
-            "avatar": "avatar_683db98f362e1.jpeg"
+            "name": "Nguyễn Xuân Lam",
+            "avatar": "avatar_683ece36c42ce.jpg"
         },
-        "created_at": "2025-06-02 16:47:43",
-        "category": "truyen_cam_hung",
-        "category_label": "Inspiration"
+        "created_at": "2025-06-03 12:28:06",
+        "category": "hoc_tap",
+        "category_label": "Study"
+    },
+    {
+        "title": "We must live our lives well for those who love us!",
+        "about": "Normally, people will have people who love and hate them. But sometimes, we are too concerned about those who hate us instead of those who love us. Understand that no matter how hard we try, in their eyes, breathing is a hateful thing. Indifferently, those who hate us turn their lives into petty, muddy, suffocating things. As for us, we do not need to worry about those who hate us. Our lives are for those who love us.",
+        "author": {
+            "name": "Xuân Vinh",
+            "avatar": "avatar_683ebd02e4591.jpeg"
+        },
+        "created_at": "2025-06-03 11:14:42",
+        "category": "gia_dinh",
+        "category_label": "Family"
     }
 ]
